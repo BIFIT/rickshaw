@@ -940,7 +940,9 @@ Rickshaw.Fixtures.Time = function() {
 		}, {
 			name: 'hour',
 			seconds: 3600,
-			formatter: function(d) { return self.formatTime(d) }
+			formatter: function(d) {
+				return moment(d).format('mm:ss');
+			}
 		}, {
 			name: '15 minute',
 			seconds: 60 * 15,
@@ -1415,7 +1417,7 @@ Rickshaw.Graph.Axis.Time = function(args) {
 	var time = args.timeFixture || new Rickshaw.Fixtures.Time();
 
 	this.appropriateTimeUnit = function() {
-
+//debugger;
 		var unit;
 		var units = time.units;
 
@@ -1439,7 +1441,7 @@ Rickshaw.Graph.Axis.Time = function(args) {
 		var count = Math.ceil((domain[1] - domain[0]) / unit.seconds);
 
 		var runningTick = domain[0];
-
+		//debugger;
 		var offsets = [];
 
 		for (var i = 0; i < count; i++) {
@@ -1474,7 +1476,10 @@ Rickshaw.Graph.Axis.Time = function(args) {
 
 			var title = document.createElement('div');
 			title.classList.add('title');
-			title.innerHTML = o.unit.formatter(new Date(o.value * 1000));
+			title.innerHTML = o.unit.formatter(new Date(o.value /** 1000*/));
+			//debugger;
+			//title.innerHTML = /*o.unit.formatter*/(  moment(o.value  * 1000).format('hh:mm'));
+
 			element.appendChild(title);
 
 			self.graph.element.appendChild(element);
@@ -2042,7 +2047,8 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 		var graph = this.graph = args.graph;
 
 		this.xFormatter = args.xFormatter || function(x) {
-			return new Date( x * 1000 ).toUTCString();
+			//return new Date( x * 1000 ).toUTCString();
+			return 'Time: ' + moment(x).format('hh:mm:ss');
 		};
 
 		this.yFormatter = args.yFormatter || function(y) {
@@ -2200,9 +2206,11 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 		this.element.style.left = graph.x(point.value.x) + 'px';
 
 		var xLabel = document.createElement('div');
-
 		xLabel.className = 'x_label';
 		xLabel.innerHTML = formattedXValue;
+		xLabel.style.top = this.graph.y(point.value.y0 + point.value.y) + 20 + 'px';
+		//this.element.style.top = this.graph.y(point.value.y0 + point.value.y) + 40 + 'px'//graph.x(point.value.x) + 'px';
+
 		this.element.appendChild(xLabel);
 
 		var item = document.createElement('div');
@@ -2221,7 +2229,7 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 		var dot = document.createElement('div');
 
 		dot.className = 'dot';
-		dot.style.top = item.style.top;
+		dot.style.top = this.graph.y(point.value.y0 + point.value.y) + 'px';
 		dot.style.borderColor = series.color;
 
 		this.element.appendChild(dot);
